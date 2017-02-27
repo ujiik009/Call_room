@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import org.jibble.simpleftp.SimpleFTP;
+
+import java.io.File;
 
 public class Register extends AppCompatActivity {
 
@@ -115,7 +120,25 @@ personImageView.setOnClickListener(new View.OnClickListener() {
 
                 } else {
                     Toast.makeText(Register.this, "สมัครสมาชิกสำเร็จ", Toast.LENGTH_LONG).show();
+                    try {
+                        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy
+                                .Builder()
+                                .permitAll()
+                                .build();
+                        StrictMode.setThreadPolicy(policy);
+                        SimpleFTP simpleFTP = new SimpleFTP();
+//                        simpleFTP.connect("451.642.1843.2144", 21,
+//                                "callroom@bsruteam.tk", "12345");
+                        simpleFTP.connect("ftp.swiftcodingthai.com", 21,
+                                "bsru@swiftcodingthai.com", "Abc12345");
+                        simpleFTP.bin();
+                        simpleFTP.cwd("img_user");
+                        simpleFTP.stor(new File(realPath));
+                        simpleFTP.disconnect();
 
+                    } catch (Exception e) {
+                        Log.d("ftp", "ftp ==>" + e.toString());
+                    }
 
                 }
                 //Toast.makeText(Register.this,fnameString,Toast.LENGTH_SHORT).show();
