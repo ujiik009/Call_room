@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -27,6 +27,7 @@ public class Register extends AppCompatActivity {
     private ImageView personImageView;
     private Uri uri;
     private Boolean statusimage = true;
+    private String realPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class Register extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && data != null) {
             statusimage = false;
 
             uri = data.getData();
@@ -51,6 +52,21 @@ public class Register extends AppCompatActivity {
 
             } catch (Exception e) {
             }
+            // SDK < API11
+            if (Build.VERSION.SDK_INT < 11) {
+                realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(this, data.getData());
+
+                // SDK >= 11 && SDK < 19
+            }else if (Build.VERSION.SDK_INT < 19) {
+                realPath = RealPathUtil.getRealPathFromURI_API11to18(this, data.getData());
+
+                // SDK > 19 (Android 4.4)
+            }else {
+                realPath = RealPathUtil.getRealPathFromURI_API19(this, data.getData());
+            }
+            Log.d("path", "path ==>" + realPath);
+            Toast.makeText(Register.this, realPath, Toast.LENGTH_SHORT).show();
+
 
         }
 
